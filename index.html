@@ -277,16 +277,15 @@
         
             dlink.addEventListener(('click'), ()=> {
             
-// Rewarded Popup
 
-show_10208212('pop').then(() => {
-    // user watch ad till the end or close it in interstitial format
-    // your code to reward user for rewarded format
+// Rewarded interstitial
+
+show_10208212().then(() => {
+    // You need to add your user reward function here, which will be executed after the user watches the ad.
+    // For more details, please refer to the detailed instructions.
     navigator.clipboard.writeText(`${downloadLink}download-${plusLink}`)
             dlink.textContent = 'Link Copied';
-}).catch(e => {
-    // user get error during playing ad
-    // do nothing or whatever you want
+    alert('Link Copied!! Paste The Link in your Browser to start Downloading the Movie.');
 })
             
         });
