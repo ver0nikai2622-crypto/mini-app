@@ -265,7 +265,7 @@
                       //para sa title naman
                       movieTitle.forEach((title, index) => {
                           title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
-                       kuhaLink(data.results[index])
+                       kuhaLink(data, index)
                       });//sa movititle foreach
                      
                   }//unang if
@@ -277,31 +277,27 @@
              .catch(error => console.error(error));
         }//dulo ng firstFetch
                 
-        function kuhaLink(movie){
-        let plusLink = `${movie.title.replace(/\s+/g, '-')}-${movie.release_date.substring(0, 4)}`;        
-            kopyaLink(plusLink)
-        }
-        
-        //function pra sa copylink
-        function kopyaLink(plusLink){
-            dLink.forEach((dlink, index) => {
-                
-                    dlink.textContent = 'Copy Link';
-                    dlink.addEventListener('click', ()=> {
-                        //monetag saloob
-                        // Rewarded interstitial
-
-show_10208212().then(() => {
+        function kuhaLink(movie, index){
+            const plusLink = `${movie.results[index].title.replace(/\s+/g, '-')}-${movie.results[index].release_date.substring(0, 4)}`;        
+            
+            dLink.forEach(kopyaUrl => {
+                setTimeout(()=>{
+                    kopyaUrl.textContent = 'Copy Link';
+                    kopyaUrl.addEventListener('click', ()=>{
+                        //alert('hellow sorld')
+                        //monetag
+                        show_10208212().then(() => {
   // You need to add your user reward function here, which will be executed after the user watches the ad.
   // For more details, please refer to the detailed instructions.
   navigator.clipboard.writeText(`${downloadLink}download-${plusLink}`);
   dlink.textContent = 'Link Copied';
   alert('Link Copied!! Paste The Link in your Browser to start Downloading the Movie.');
 }).catch(error => console.error(error));
-                        //monetag saloob
-                    });//dulo ng clickevent
-              
-            });//dulo ng forEachdLink
+                        //monetag
+                    });
+                },5000)
+            });
+           
         }
         
         //navigation naman
@@ -350,7 +346,7 @@ show_10208212().then(() => {
                           title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
                           //link naman
                  
-               kuhaLink(data.results[index]);
+               kuhaLink(data, index);
                  });
                  
              })
@@ -389,7 +385,7 @@ show_10208212().then(() => {
                  title.textContent = `${search.results[index].title} (${search.results[index].release_date.substring(0, 4)})`;
                  //link naman
                  
-            kuhaLink(search.results[index]);
+            kuhaLink(search, index);
                  });
                  
                  //buttons naman
