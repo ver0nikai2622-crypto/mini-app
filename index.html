@@ -117,7 +117,7 @@
         <h2>Copy The Download Link and Paste it in Your Browser</h2>
         <div class="search-container">
             <input id="search-input" type="text">
-            <button>&#128269;</button>
+            <button id="search-button">&#128269;</button>
         </div>
         <div class="movie-container">
             <h2 class="title" data-original=""></h2>
@@ -212,7 +212,8 @@
         </div>
         
         </div>
-        <h2 class="title" data-original=""></h2>
+        <div class="movie-container">
+            <h2 class="title" data-original=""></h2>
             <p class="dLink" data-original="Getting Link...">Getting Link</p>
         </div>
         
@@ -242,13 +243,6 @@
     </main>
     
     <script>
-
-        
-        
-
-        
-        
-        
         let originalImage = "https://image.tmdb.org/t/p/original";
         const popularAPI = "https://api.themoviedb.org/3/movie/popular";
         const myAPI = "fc6800402ffd747e928d3b0837704dc4";
@@ -257,100 +251,164 @@
         let movieTitle = document.querySelectorAll('.title');
         let dLink = document.querySelectorAll('.dLink');
         let downloadLink = 'https://vdl.np-downloader.com/sdm_downloads/';
-        
-        fetch(`${popularAPI}${saGitna}${myAPI}`)
-  .then(response => response.json())
-  .then(data => {
-    movieCon.forEach((mubi, index) => {
-      if(data.results && data.results[index] && data.results[index].backdrop_path){
-        mubi.style.backgroundImage = `url("${originalImage}${data.results[index].backdrop_path}")`;
-        
-      }
-    });
-    movieTitle.forEach((title, index) => {
-        title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
-    });
-    dLink.forEach((dlink, index) => {
-    const plusLink = `${data.results[index].title.replace(/\s+/g, '-')}-${data.results[index].release_date.substring(0, 4)}`;
-        setTimeout(()=>{
-        dlink.textContent = 'Copy Link';
-        
-            dlink.addEventListener(('click'), ()=> {
-            
 
-// Rewarded interstitial
+        firstFetch();
+        
+        function firstFetch(){
+            fetch(`${popularAPI}${saGitna}${myAPI}`)
+             .then(response => response.json())
+             .then(data => {
+                 movieCon.forEach((moviecon, index) => {
+                  if(data.results && data.results[index] && data.results[index].backdrop_path){
+                      moviecon.style.backgroundImage = `url(${originalImage}${data.results[index].backdrop_path})`;
+                      //tapos na sa pag kuha ng photos
+                      //para sa title naman
+                      movieTitle.forEach((title, index) => {
+                          title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
+                       kuhaLink(data.results[index])
+                      });//sa movititle foreach
+                     
+                  }//unang if
+                 })//movieConforEach
+                 
+                 //btns
+                 
+             })//sa then
+             .catch(error => console.error(error));
+        }//dulo ng firstFetch
+                
+        function kuhaLink(movie){
+        let plusLink = `${movie.title.replace(/\s+/g, '-')}-${movie.release_date.substring(0, 4)}`;        
+            kopyaLink(plusLink)
+        }
+        
+        //function pra sa copylink
+        function kopyaLink(plusLink){
+            dLink.forEach((dlink, index) => {
+                setTimeout(()=>{
+                    dlink.textContent = 'Copy Link';
+                    dlink.addEventListener('click', ()=> {
+                        //monetag saloob
+                        // Rewarded interstitial
 
 show_10208212().then(() => {
-    // You need to add your user reward function here, which will be executed after the user watches the ad.
-    // For more details, please refer to the detailed instructions.
-    navigator.clipboard.writeText(`${downloadLink}download-${plusLink}`)
-            dlink.textContent = 'Link Copied';
-    alert('Link Copied!! Paste The Link in your Browser to start Downloading the Movie.');
-})
-            
-        });
-        },5000);
-    });
-  })
-  .catch(error => console.error(error));
-
-//fetchsanav
-let prevBtn = document.querySelector('.prev');
-let pageText = document.querySelector('.pageText');
-let nextBtn = document.querySelector('.next');
-let currentCount = 1;
-prevBtn.addEventListener('click', ()=> {
-    if(currentCount >= 1){
-        resetOrig();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-        currentCount--;
-        pageText.textContent = currentCount;
-        navFetch();
-    }
-});
-nextBtn.addEventListener('click', ()=> {
-        resetOrig();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-        currentCount++;
-        pageText.textContent = currentCount;
-        navFetch();
-});
-function resetOrig(){
-    movieTitle.forEach(balik => {
-        balik.textContent = balik.dataset.original;
-    });
-}
-function navFetch(){
-    fetch(`${popularAPI}${saGitna}${myAPI}&page=${currentCount}`)
-     .then(res => res.json())
-     .then(data => {
-         movieCon.forEach((mubi, index) => {
-      if(data.results && data.results[index] && data.results[index].backdrop_path){
-        mubi.style.backgroundImage = `url("${originalImage}${data.results[index].backdrop_path}")`;
+  // You need to add your user reward function here, which will be executed after the user watches the ad.
+  // For more details, please refer to the detailed instructions.
+  navigator.clipboard.writeText(`${downloadLink}download-${plusLink}`);
+  dlink.textContent = 'Link Copied';
+  alert('Link Copied!! Paste The Link in your Browser to start Downloading the Movie.');
+}).catch(error => console.error(error));
+                        //monetag saloob
+                    });//dulo ng clickevent
+                },5000);
+            });//dulo ng forEachdLink
+        }
         
-      }
-    });
-    
-    movieTitle.forEach((title, index) => {
-        title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
-    });
-    
-    dLink.forEach((dlink, index) => {
-    const plusLink = `${data.results[index].title.replace(/\s+/g, '-')}-${data.results[index].release_date.substring(0, 4)}`;
-    setTimeout(()=>{
-    dlink.forEach(copyLink => {
-        dlink.textContent = 'Copy Link';
-    })
-        dlink.addEventListener(('click'), ()=> {
-            navigator.clipboard.writeText(`${downloadLink}download-${plusLink}`);
-            dlink.textContent = 'link Copied';
+        //navigation naman
+        let prevBtn = document.querySelector('.prev');
+        let pageText = document.querySelector('.pageText');
+        let nextBtn = document.querySelector('.next');
+        let currentCount = 1;
+        
+        prevBtn.addEventListener('click', ()=> {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+            if(currentCount >= 1){
+                currentCount--;
+                pageText.textContent = currentCount;
+                pagination();
+            }
         });
-    },10000)
-    });
-         
-     })
-     .catch(err => console.err(err));
-}
+        
+        nextBtn.addEventListener('click', ()=> {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        //reset dLink
+        dLink.forEach(dlink => {
+            dlink.textContent = dlink.dataset.original;
+        });       
+            nextBtnHandler()
+        });
+        
+        function nextBtnHandler(){
+            currentCount++;
+               pageText.textContent = currentCount;
+               pagination(currentCount);
+        }
+        
+        //pagination fetch
+        function pagination(pahina){
+            fetch(`${popularAPI}${saGitna}${myAPI}&page=${currentCount}`)
+             .then(response => response.json())
+             .then(data => {
+                 movieCon.forEach((moviecon, index) => {
+                     if(data.results && data.results[index] && data.results[index].backdrop_path){
+                         moviecon.style.backgroundImage = `url(${originalImage}${data.results[index].backdrop_path})`;
+                     }//sa if
+                 });//movieCon foreach
+                 
+                 //title naman
+                 movieTitle.forEach((title, index) => {
+                          title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`;
+                          //link naman
+                 
+               kuhaLink(data.results[index]);
+                 });
+                 
+             })
+             .catch(error => console.log(error));
+        }
+        
+        //search naman
+        let searchInput = document.getElementById('search-input');
+        let searchBtn = document.getElementById('search-button');
+        const searchApi = 'https://api.themoviedb.org/3/search/movie?api_key=';
+        let resultPage = 1;
+        
+        searchBtn.addEventListener('click', () => {
+        dLink.forEach(dlink => {
+            dlink.textContent = dlink.dataset.original;
+        });
+        movieCon.forEach(movie => {
+            movie.style.backgroundImage = '';
+        });
+        movieTitle.forEach(title => {
+            title.textContent = '';
+        });
+        pageText.textContent = resultPage;
+        let keyword = searchInput.value;
+            fetch(`${searchApi}${myAPI}&query=${encodeURIComponent(keyword)}&page=${resultPage}`)
+             .then(response => response.json())
+             .then(search => {
+                 movieCon.forEach((movie, index) => {
+                 if(search.results && search.results[index] && search.results[index].backdrop_path){
+                     movie.style.backgroundImage = `url(${originalImage}${search.results[index].backdrop_path})`;
+                 }      
+                 });
+                 
+                 //title naman
+                 movieTitle.forEach((title, index) => {
+                 title.textContent = `${search.results[index].title} (${search.results[index].release_date.substring(0, 4)})`;
+                 //link naman
+                 
+            kuhaLink(search.results[index]);
+                 });
+                 
+                 //buttons naman
+                 nextBtn.addEventListener('click', ()=> {
+                     window.scrollTo({top: 0, behavior: 'smooth'});
+                     resultPage++;
+                     pageText.textContent = resultPage;
+                     //resetdLink
+                     dLink.forEach(dlink => {
+                         dlink.textContent = dlink.dataset.original;
+                         //pagination(resultPage);
+                     });
+                     
+                 });
+             })
+             .catch(error => console.error(error));
+        });
+        
+     
     </script>
 </body>
 </html>
