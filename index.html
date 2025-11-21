@@ -232,15 +232,16 @@
             <p class="playerBtn" data-original="Generating">Generating</p>
         </div>
         
-        <ul class="nav">
+        <ul class="nav" id="firstLipatan">
             <li class="prev">Prev</li>
             <li class="pageText">1</li>
             <li class="next">Next</li>
         </ul>
-    </main>
-    <div class="modal">
-        <iframe id="myIframe" src="" allowfullscreen></iframe>
-    </div>
+        <ul class="nav" id="searchLipatan" style="display: none;">
+            <li class="searchPrev">Prev</li>
+            <li class="searchPageText">1</li>
+            <li class="searchNext">Next</li>
+        </ul>
     
     <script>
         let originalImage = "https://image.tmdb.org/t/p/original";
@@ -251,28 +252,133 @@
         let movieTitle = document.querySelectorAll('.title');
         let playBtn = document.querySelectorAll('.playerBtn');
         const dlUrl = 'https://vdl.np-downloader.com/sdm_downloads/';
+        let searchInput = document.getElementById('search-input');
+        let searchBtn = document.getElementById('search-button');
+        const searchApi = 'https://api.themoviedb.org/3/search/movie?api_key=';
+        const searchLipatan = document.getElementById('searchLipatan');
+        const firstLipatan = document.getElementById('firstLipatan')
+        const searchPrev = document.querySelector('.searchPrev');
+        const searchPageText = document.querySelector('.searchPageText');
+        const searchNext = docuement.querySelector('searchNext');
+        
         firstFetch()
+        
         function firstFetch(){
             fetch(`${popularAPI}${saGitna}${myAPI}`)
              .then(response => response.json())
              .then(data => {
-                 movieCon.forEach((mobi, index) => {
-                 if(data.results && data.results[index] && data.results[index].backdrop_path){
-                     mobi.style.backgroundImage = `url(${originalImage}${data.results[index].backdrop_path})`;
-                 } 
-                 });
+                 movieConFunc(data);
                  
-                 movieTitle.forEach((title, index) => {
-                     title.textContent = `${data.results[index].title} (${data.results[index].release_date.substring(0, 4)})`; 
-                 });
+                 movieTitleFunc(data);
                 
-                playNow(data)
+                copyNow(data);
              })
              .catch(error => console.error(error));
         }
         
+        
+        let resultPage = 1;
+        searchBtn.addEventListener('click', ()=> {
+            searchLipatan.style.display = 'flex';
+            firstLipatan.style.display = 'none'
+            //console.log('hellow')
+            resetOrig()
+            searchFetch(resultPage);
+            pageText.textContent = resultPage;
+        })
+        
+        function searchFetch(resultPage){
+        let keyword = searchInput.value;
+            fetch(`${searchApi}${myAPI}&query=${encodeURIComponent(keyword)}&page=${resultPage}`)
+             .then(response => response.json())
+             .then(search => {
+                 movieConFunc(search);
+                 
+                 movieTitleFunc(search);
+                
+                copyNow(search);
+             })
+             .catch(error => console.error(error));
+        }
+        //search nextprev
+        
+        //nextprev
+        const prevBtn = document.querySelector('.prev');
+        const pageText = document.querySelector('.pageText');
+        const nextBtn = document.querySelector('.next');
+        let currentCount = 1;
+        
+        prevBtn.addEventListener('click', ()=> {
+        console.log('kamusta')
+            if(currentCount >= 1){
+                scrollTo({top:0, behavior: 'smooth'});
+                resetOrig();
+                currentCount--;
+                naviGate(currentCount);
+            }
+        });
+        
+        nextBtn.addEventListener('click', ()=> {
+            scrollTo({top:0, behavior: 'smooth'});
+            resetOrig();
+            currentCount++
+            naviGate(currentCount);
+        });
+        
+        /*
+        function nextBtnHandler(){
+            //para sa firstFetch
+            scrollTo({top:0, behavior: 'smooth'});
+            resetOrig()
+            currentCount++
+            naviGate(currentCount);
+            //parasa firstfetch
+        }
+        */
+        
+        //kailangan na fetch para makapag navigate
+        function naviGate(currentCount){
+        pageText.textContent = currentCount;
+            fetch(`${popularAPI}${saGitna}${myAPI}&page=${currentCount}`)
+             .then(response => response.json())
+             .then(navi => {
+                 movieConFunc(navi);
+                 
+                 movieTitleFunc(navi);
+                
+                 copyNow(navi);
+             })
+             .catch(error => console.error(error))
+        }
+        
+        function resetOrig(){
+            movieCon.forEach(poster => {
+                poster.style.backgroundColor = 'red';
+            });
+            movieTitle.forEach(title => {
+                title.textContent = ''
+            });
+            playBtn.forEach(generate => {
+                generate.textContent = generate.dataset.original;
+            });
+        }
+        //para sa poster
+        function movieConFunc(palitan){
+            movieCon.forEach((mobi, index) => {
+                 if(palitan.results && palitan.results[index] && palitan.results[index].backdrop_path){
+                     mobi.style.backgroundImage = `url(${originalImage}${palitan.results[index].backdrop_path})`;
+                  } 
+             });
+        }
+        //para sa title
+        function movieTitleFunc(palitan){
+            movieTitle.forEach((title, index) => {
+                     title.textContent = `${palitan.results[index].title} (${palitan.results[index].release_date.substring(0, 4)})`; 
+                 });
+        }
+        
         //playerBtn
-        function playNow(movie, index){
+        function copyNow(movie, index){
             setTimeout(()=>{
                 playBtn.forEach((pilay, index)=>{
                 pilay.textContent = 'Copy Link'
@@ -284,7 +390,7 @@
                      .then(() => {
                      navigator.clipboard.writeText(`${dlUrl}download-${plusLink}`)
                      // For more details, please refer to the detailed instructions.
-                     alert('Link Copied! Paste it in your browser to start downloading the movie');
+                     alert('Link Copied! Paste it in your browser to start downloading');
                      })
                                                             
                     //
