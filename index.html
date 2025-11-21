@@ -399,7 +399,7 @@
             setTimeout(()=>{
                 playBtn.forEach((pilay, index)=>{
                 pilay.textContent = 'Copy Link'
-                const plusLink = `${movie.results[index].title.replace(/\s+/g, '-')}-${movie.results[index].release_date.substring(0, 4)}`;
+                const plusLink = `${movie.results[index].title.replace(/\s+/g, '-').replace(/'/g, '')}-${movie.results[index].release_date.substring(0, 4)}`;
                 pilay.addEventListener('click', ()=> {
                     //alert('hellow world');
                     // Rewarded interstitial
