@@ -259,7 +259,7 @@
         const firstLipatan = document.getElementById('firstLipatan')
         const searchPrev = document.querySelector('.searchPrev');
         const searchPageText = document.querySelector('.searchPageText');
-        const searchNext = docuement.querySelector('searchNext');
+        const searchNext = document.querySelector('.searchNext');
         
         firstFetch()
         
@@ -301,6 +301,23 @@
              .catch(error => console.error(error));
         }
         //search nextprev
+        searchPrev.addEventListener('click', ()=> {
+            if(resultPage >= 1){
+                scrollTo({top:0, behavior: 'smooth'});
+                resetOrig();
+                resultPage--;
+                searchFetch(resultPage);
+            }
+        });
+        //searchPageText
+        
+        searchNext.addEventListener('click', ()=>{
+            scrollTo({top:0, behavior: 'smooth'});
+            resetOrig();
+            resultPage++
+            searchFetch(resultPage);
+        });
+        
         
         //nextprev
         const prevBtn = document.querySelector('.prev');
